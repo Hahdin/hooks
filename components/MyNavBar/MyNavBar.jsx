@@ -11,7 +11,7 @@ const MyNavBar = ({ ...props }) => {
     <Navbar inverse fluid collapseOnSelect style={{boxShadow: '2px 2px 10px black'}}>
       <Navbar.Header>
         <Navbar.Brand>
-          <a href="/">Template</a>
+          <a href="/">Hooks</a>
         </Navbar.Brand>
         <Navbar.Toggle />
       </Navbar.Header>
