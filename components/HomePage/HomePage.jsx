@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useReducer } from 'react'
 import { EditUserModal } from '../EditUserModal'
 import { Button } from "react-bootstrap"
 
@@ -13,8 +13,26 @@ const asyncFcn = (fetching) => {
     }, 3000)//<-- slow network
   })
 }
+const initialState = { count: 0 }
+const _reducer = (state, action) => {
+  switch (action.type) {
+    case 'reset': {
+      return initialState
+    }
+    case 'increment': {
+      return { count: state.count + 1 }
+    }
+    case 'decrement': {
+      return { count: state.count - 1 }
+    }
+    default:
+      return state
+  }
+}
 export const HomePage = ({ ...props }) => {
+  let {initialValueCount} = props
   let fetching = useRef(false)
+  const [store, dispatch] = useReducer(_reducer, { count: initialValueCount })
   //define our state vars and setState methods
   const [clicks, setClickState] = useState({ count: 0 })
   const [showModal, toggleModal] = useState(false)
@@ -25,12 +43,14 @@ export const HomePage = ({ ...props }) => {
   const [textColor, setColor] = useState('rgb(255,255,0)')
   const [someValue, fetchValue] = useState(null)
   useLayoutEffect(async () => {//componentDidMount, useState called
-    try{if (!someValue && !fetching.current) {//fetch some data from an api
-      fetchValue(await asyncFcn(fetching))
-    } else {
-      console.log('** useLayoutEffect **', msg())
-    }}
-    catch(e){console.log(e)}
+    try {
+      if (!someValue && !fetching.current) {//fetch some data from an api
+        fetchValue(await asyncFcn(fetching))
+      } else {
+        console.log('** useLayoutEffect **', msg())
+      }
+    }
+    catch (e) { console.log(e) }
     return () => {//componentWillUnmount
       console.log('useLayoutEffect - clean up, or do something')
     }
@@ -60,10 +80,12 @@ export const HomePage = ({ ...props }) => {
     closeModal(true)
   }
   const updateValue = async () => {
-    try{if (fetching.current) return
-    fetchValue(-999)//flag refetch msg
-    fetchValue(await asyncFcn(fetching))}
-    catch(e){console.log(e)}
+    try {
+      if (fetching.current) return
+      fetchValue(-999)//flag refetch msg
+      fetchValue(await asyncFcn(fetching))
+    }
+    catch (e) { console.log(e) }
   }
   return (
     <div style={{ color: 'black' }}>
@@ -74,16 +96,16 @@ export const HomePage = ({ ...props }) => {
       }}>
         <Button bsStyle="primary" onClick={() => setClickState({ count: clicks.count + 1 })}>
           Click
-      </Button>{" "}
+        </Button>{" "}
         <Button bsStyle="primary" onClick={() => toggleModal(!showModal)}>
           Edit User
-      </Button>{" "}
+        </Button>{" "}
         <Button bsStyle="primary" onClick={() => setColor(getClr())}>
           Change Color
-      </Button>{" "}
+        </Button>{" "}
         <Button bsStyle="primary" onClick={() => updateValue()} disabled={fetching.current || !someValue} >
           New Value
-      </Button>{" "}
+        </Button>{" "}
       </div>
       <div style={{
         backgroundColor: `${textColor}`,
@@ -101,6 +123,23 @@ export const HomePage = ({ ...props }) => {
         <div>Value: {someValue ? someValue === -999 ? 'Refetching....' : someValue : 'fetching...'} </div>
         <hr />
         <p>You clicked {clicks.count} times</p>
+        <p>Reducer counter clicks: {store.count}</p>
+      </div>
+      <div style={{
+        padding: '20px',
+        margin: 'auto',
+        width: '50%'
+      }}>
+
+        <Button bsStyle="primary" onClick={() => dispatch({ type: 'reset' })} >
+          Reset
+        </Button>{" "}
+        <Button bsStyle="primary" onClick={() => dispatch({ type: 'increment' })} >
+          Increment
+        </Button>{" "}
+        <Button bsStyle="primary" onClick={() => dispatch({ type: 'decrement' })} >
+          Decrement
+        </Button>{" "}
       </div>
       <EditUserModal
         show={showModal}

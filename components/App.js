@@ -10,8 +10,7 @@ const App = ({ ...props }) => {
         <Router history={history}>
           <div>
             <MyNavBar />
-            <Route path="/" exact component={HomePage} />
-            {/* <Route path="/" exact component={SomePage} /> */}
+            <Route path="/" exact render={(props) => <HomePage {...props} initialValueCount={0} />} />
             </div>
         </Router>
      </div>
