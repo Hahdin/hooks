@@ -6,8 +6,8 @@ export const HomePage = ({ ...props }) => {
   const [clicks, setClickState] = useState({count: 0})
   const [showModal, toggleModal] = useState(false)
   const [user, updateUser] = useState({
-    firstName: 'Mark',
-    lastName: 'Foster'
+    firstName: 'Bill',
+    lastName: 'Jones'
   })
   const [textColor, setColor] = useState('rgb(2,2,255)')
   useEffect(() => {
