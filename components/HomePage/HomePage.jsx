@@ -42,25 +42,24 @@ export const HomePage = ({ ...props }) => {
   })
   const [textColor, setColor] = useState('rgb(255,255,0)')
   const [someValue, fetchValue] = useState(null)
-  useLayoutEffect(async () => {//componentDidMount, useState called
+  useLayoutEffect(() => {//componentDidMount, useState called
+    handleLayout()
+  })
+  useEffect(() => {//componentDidUpdate
+    console.log('** useEffect (componentDidUpdate)**', msg())
+  })
+
+  const handleLayout = async () =>{
     try {
       if (!someValue && !fetching.current) {//fetch some data from an api
         fetchValue(await asyncFcn(fetching))
       } else {
-        console.log('** useLayoutEffect **', msg())
+        console.log('** useLayoutEffect (componentDidMount, useState called) **', msg())
       }
     }
     catch (e) { console.log(e) }
-    return () => {//componentWillUnmount
-      console.log('useLayoutEffect - clean up, or do something')
-    }
-  })
-  useEffect(() => {//componentDidUpdate
-    console.log('** useEffect **', msg())
-    return () => {//componentWillUnmount
-      console.log('useEffect - clean up, or do something')
-    }
-  })
+  }
+
   const msg = () =>
     `you clicked ${clicks.count} times, toggle: ${showModal}
     set user state -  ${user.firstName} ${user.lastName}
